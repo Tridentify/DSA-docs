@@ -20,8 +20,8 @@ Not only that, without the help of the other coders and designers, our team woul
 ### Personal Projects
 In *scratch*, I have created tons of projects. These includes some games, like Platformers, Clicker Games, and other minigames. Some of the more notable ones are *Obstacle - A Platformer* and *Rubik's Cube Clicker*.
 
-**Obstacle - A Platformer**
+**Obstacle - A Platformer** <br>
 In *Obstacle*, I made a total of four levels. For each level, the player has to collect the coin and advance to the next level. If the player lands onto a spike, the game ends. If the player succeeds in finishing all four levels, they win.
 
-**Rubik's Cube Clicker**
+**Rubik's Cube Clicker** <br>
 In *Rubik's Cube Clicker*, the player can score points by clicking on the rubik's cube. After the player has achieved a certain number of points, they can buy upgrades, like *+1 point/s* or *+1 point/click*.
