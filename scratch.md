@@ -10,3 +10,16 @@ For the first level, the player first has to wear a swimsuit and dive down into 
 
 After the player has scored 50 points, the next level starts. For the second level, the player has to clean up an oil spill. The player will be given a special tool/machine to help clear the oil, called the *skimmer*. The player then drags the skimmer accross the screen to clean up the oil. If the player fails to clean up the oil in time, they will lose.
 
+**My Experience**
+When making the game, I faced many challenges, like bugs, and scripts that were not working. Together with my teammates, I learnt to overcome these challenges by thinking of different solutions. This way, we were able to face our difficulties and remove some bugs.
+
+Not only that, without the help of the other coders and designers, our team would have not done a good job. My teammates helped us alot in the process. As a result, I think that teamwork played a very important role in the making of the game.
+
+### Personal Projects
+In *scratch*, I have created tons of projects. These includes some games, like Platformers, Clicker Games, and other minigames. Some of the more notable ones are *Obstacle - A Platformer* and *Rubik's Cube Clicker*.
+
+**Obstacle - A Platformer**
+In *Obstacle*, I made a total of four levels. For each level, the player has to collect the coin and advance to the next level. If the player lands onto a spike, the game ends. If the player succeeds in finishing all four levels, they win.
+
+**Rubik's Cube Clicker**
+In *Rubik's Cube Clicker*, the player can score points by clicking on the rubik's cube. After the player has achieved a certain number of points, they can buy upgrades, like *+1 point/s* or *+1 point/click*.
