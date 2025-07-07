@@ -6,3 +6,401 @@ function getPlayerIdsFromTeam(e){_teamedPlayers=[];for(let t of api.getPlayerIds
 ```
 
 ## Freeze Tag
+```js
+let waitSeconds = 30
+let playersRequired = 2
+let showMsg = 5
+let gameLength = 2
+let lobFull = 7
+
+resTimer = 50000
+waitTimer = waitSeconds * 20 + 1
+game = false
+gameTimer = gameLength * 60 * 20 + 1
+r1timer = 50000
+newTime = 10000
+
+function randPlayer() {
+	let players = api.getPlayerIds()
+	nonDead = []
+	for (let pId of players) {
+		if (api.isAlive(pId)) {
+			nonDead.push(pId)
+		}
+	}
+	if (nonDead.length > 1) {
+		let rand = nonDead[Math.floor(Math.random() * nonDead.length)]
+		return rand
+	} else {
+		return null
+	}
+}
+
+tick = (ms) => {
+	if (!game) {
+		waitTimer -= 1
+	}
+	resTimer += 1
+	r1timer += 1
+	newTime += 1
+	if (resTimer === 100) {
+		resTimer = 50000
+		for (let pId of api.getPlayerIds()) {
+			api.setClientOption(pId, "middleTextUpper", "")
+		}
+	}
+	if (resTimer === 1) {
+		for (let pId of api.getPlayerIds()) {
+			api.setClientOption(pId, "RightInfoText", [{str: "Freeze Tag ", style: {color: "lightblue", fontSize: "20px"}}, {icon: "Frozen", style: {fontSize: "30px"}}, "\nTagger: ", {str: api.getEntityName(player), style: {color: "lightblue"}}, "\nTime Left: ", {str: `${gameLength * 60}`, style: {color: "lime"}}])
+		}
+	}
+	if (r1timer === 100) {
+		for (let pId of api.getPlayerIds()) {
+			api.setClientOption(pId, "middleTextUpper", "")
+		}
+		r1timer = 50000
+	}
+	if (newTime === 100) {
+		for (let pId of api.getPlayerIds()) {
+			api.setClientOption(pId, "middleTextUpper", "")
+		}
+	}
+	if (!game) {
+		if (waitTimer < 1) {
+			for (let pId of api.getPlayerIds()) {
+				waitTimer = waitSeconds * 20
+			}
+			if (api.getPlayerIds().length < playersRequired) {
+				api.broadcastMessage(`Need ${playersRequired} or more players to start the game`, {color: "#CEF3FF"})
+			} else {
+				api.broadcastMessage("Game starting!", {color: "#CEF3FF"})
+				player = randPlayer()
+				if (player == null) {
+					for (let pId of api.getPlayerIds()) {
+						api.kickPlayer(pId, "You have been kicked for inactivity")
+					}
+				}
+				for (let pId of api.getPlayerIds()) {
+					api.setClientOption(pId, "middleTextUpper", "")
+					api.setClientOption(pId, "RightInfoText", "")
+					api.setWalkThroughType(pId, "Glass", true)
+					api.setClientOption(pId, "middleTextLower", "")
+					api.setClientOption(pId, "creative", false)
+					api.setPosition(pId, [242, 80, 82])
+					api.removeEffect(pId, "Rested Speed")
+					api.removeEffect(pId, "Speed")
+					api.applyEffect(pId, "Speed", 5000, {inbuiltLevel: 5})
+					api.playSound(pId, "beep", 1, 2)
+					api.setHealth(pId, 100)
+					api.removeEffect(pId, "Invisible")
+					api.setClientOption(pId, "useInventory", true)
+					api.setClientOption(pId, "useFullInventory", false)
+				}
+				api.setTargetedPlayerSettingForEveryone(player, "hasPriorityNametag", true, false)
+				api.setEveryoneSettingForPlayer(player, "hasPriorityNametag", true, false)
+				api.setTargetedPlayerSettingForEveryone(player, "nameTagInfo", {
+					backgroundColor: "lightblue"
+				})
+				game = true
+				api.removeEffect(player, "Speed")
+				api.applyEffect(player, "Speed", null, {inbuiltLevel: 1})
+				api.applyEffect(player, "Frozen", 5000, {inbuiltLevel: 1})
+				api.setPosition(player, [242, 74, 82])
+				newTime = 0
+				api.broadcastMessage(["The tagger is ", {str: api.getEntityName(player), style: {color: "lightblue"}}, "!"])
+			}
+		}
+		if (waitTimer % 20 === 0) {
+			for (let pId of api.getPlayerIds()) {
+				api.setClientOption(pId, "RightInfoText", ["Game starting in ", {str: JSON.stringify(waitTimer / 20), style: {color: "lime"}}])
+				api.setClientOption(pId, "middleTextUpper", "")
+				if (waitTimer / 20 === 3) {
+					api.setClientOption(pId, "middleTextUpper", ["Game starting in ", {str: "3", style: {color: "lime"}}])
+					api.playSound(pId, "beep", 1, 3)
+				} else if (waitTimer / 20 === 2) {
+					api.setClientOption(pId, "middleTextUpper", ["Game starting in ", {str: "2", style: {color: "lime"}}])
+					api.playSound(pId, "beep", 1, 3)
+				} else if (waitTimer / 20 === 1) {
+					api.setClientOption(pId, "middleTextUpper", ["Game starting in ", {str: "1", style: {color: "lime"}}])
+					api.playSound(pId, "beep", 1, 3)
+				}
+			}
+		}
+	}
+	if (game) {
+		gameTimer -= 1
+		if (gameTimer < 1) {
+			game = false
+			gameTimer = gameLength * 60 * 20 + 1
+			api.broadcastMessage("Map changed to Abandoned City", {color: "#CEF3FF"})
+			for (let pId of api.getPlayerIds()) {
+				api.setClientOption(pId, "RightInfoText", ["Game starting in ", {str: `${waitSeconds}`, style: {color: "lime"}}])
+				api.removeEffect(pId, "Frozen")
+				api.setTargetedPlayerSettingForEveryone(pId, "nameTagInfo", {backgroundColor: ""})
+				api.setHealth(pId, 0)
+				api.setHealth(pId, 100)
+				api.removeEffect(pId, "Rested Speed")
+				api.removeEffect(pId, "Speed")
+				api.setTargetedPlayerSettingForEveryone(pId, "hasPriorityNametag", false, false)
+				api.setClientOption(pId, "useInventory", true)
+				api.setClientOption(pId, "useFullInventory", false)
+			}
+			let rem = api.getPlayerIds().filter(pId => pId !== player)
+			whoWin = 0
+			invisPlayers = 0
+			api.removeEffect(player, "Speed")
+			for (let pId of rem) {
+				if (!api.getEffects(pId).includes("Frozen") && !api.getEffects(pId).includes("Invisible")) {
+					whoWin += 1
+				} else if (api.getEffects(pId).includes("Invisible")) {
+					invisPlayers += 1
+				}
+			}
+			whoWin -= 1
+			let runnerCount = api.getPlayerIds().length - 1
+			runnerCount -= invisPlayers
+			if (whoWin >= (runnerCount / 2)) {
+				api.broadcastMessage("The runners won!", {color: "goldenrod"})
+				for (let pId of api.getPlayerIds()) {
+					api.setClientOption(pId, "middleTextUpper", "The runners won!")
+				}
+				for (let pId of rem) {
+					api.giveItem(pId, "Gold Coin", 10)
+					api.sendMessage(pId, "You won!")
+				}
+			} else {
+				api.broadcastMessage(`The tagger (${api.getEntityName(player)}) won!`, {color: "goldenrod"})
+				for (let pId of api.getPlayerIds()) {
+					api.setClientOption(pId, "middleTextUpper", "The tagger won!")
+				}
+				api.giveItem(player, "Gold Coin", 10)
+				api.sendMessage(player, "You won!")
+			}
+			r1timer = 0
+		}
+		if (gameTimer % 20 === 0) {
+			for (let pId of api.getPlayerIds()) {
+				api.setClientOption(pId, "RightInfoText", [{str: "Freeze Tag ", style: {color: "lightblue", fontSize: "20px"}}, {icon: "Frozen", style: {fontSize: "30px"}}, "\nTagger: ", {str: api.getEntityName(player), style: {color: "lightblue"}}, "\nTime Left: ", {str: `${gameTimer / 20}`, style: {color: "lime"}}])
+			}
+		}
+	}
+	for (let pId of api.getPlayerIds()) {
+		let x = api.getPosition(pId)[0]
+		let y = api.getPosition(pId)[1]
+		let z = api.getPosition(pId)[2]
+		if (y < 73 || z > 133.5 || z < 30.5 || x > 293.5 || x < 190.5) {
+			api.setPosition(pId, [242, 80, 82])
+		}
+	}
+}
+
+onPlayerJoin = (pId) => {
+	api.setClientOptions(pId, {
+		RightInfoText: "",
+		middleTextUpper: "",
+		respawnButtonText: "Stay in Lobby",
+		secsToRespawn: 3,
+		usePlayAgainButton: true,
+		useFullInventory: false,
+		canUseZoomKey: true,
+		canCraft: false,
+		canChange: false,
+		creative: false,
+		maxAuraLevel: 0
+	})
+	api.setTargetedPlayerSettingForEveryone(pId, "nameTagInfo", {backgroundColor: ""})
+	api.setPosition(pId, [242, 88, 82])
+	let coins = api.getInventoryItemAmount(pId, "Gold Coin")
+	api.clearInventory(pId)
+	api.giveItem(pId, "Gold Coin", coins)
+	if (game) {
+		api.setPosition(pId, [242, 88, 82])
+		api.setClientOption(pId, "middleTextLower", "You are spectating")
+		api.setClientOption(pId, "creative", true)
+		api.setWalkThroughType(pId, "Glass")
+		api.setPosition(pId, [242, 88, 82])
+		api.setHealth(pId, null)
+		api.applyEffect(pId, "Invisible", null, {})
+		api.setClientOption(pId, "useInventory", false)
+		api.setClientOption(pId, "useFullInventory", false)
+	} else {
+		api.setPosition(pId, [242, 88, 82])
+		api.setClientOption(pId, "middleTextLower", "")
+		api.setClientOption(pId, "creative", false)
+		api.setWalkThroughType(pId, "Glass", true)
+		api.setPosition(pId, [242, 88, 82])
+		api.setHealth(pId, 100)
+		api.removeEffect(pId, "Invisible")
+		if (api.getPlayerIds().length === lobFull && waitTimer > 320) {
+			waitTimer = 15 * 20 + 1
+		}
+		api.setClientOption(pId, "useInventory", true)
+		api.setClientOption(pId, "useFullInventory", false)
+	}
+}
+
+onPlayerDamagingOtherPlayer = (atkId, dmgId, dmg, item, part, dmgDbId) => {
+	if (game) {
+		if (atkId === player && !api.getEffects(dmgId).includes("Frozen")) {
+			api.applyEffect(dmgId, "Frozen", null, {})
+			api.sendMessage(atkId, ["You have tagged ", {str: api.getEntityName(dmgId), style: {color: "lime"}}, "!"])
+			api.sendMessage(dmgId, "You have been tagged by the tagger!", {color: "coral"})
+			api.broadcastMessage(["The tagger has tagged ", {str: api.getEntityName(dmgId), style: {color: "lightblue"}}, "!"])
+			others = api.getPlayerIds().filter(id => id !== player)
+			invis = []
+			for (let pId of api.getPlayerIds()) {
+				if (api.getEffects(pId).includes("Invisible")) {
+					invis.push(pId)
+				}
+			} 
+			for (let pId of invis) {
+				others = others.filter(id => id !== pId)
+			}
+			allFrozen = true
+			for (let pId of others) {
+				if (!api.getEffects(pId).includes("Frozen")) {
+					allFrozen = false
+				} else {
+					continue
+				}
+			}
+			if (allFrozen) {
+				game = false
+				gameTimer = gameLength * 60 * 20 + 1
+				api.broadcastMessage("Map changed to Abandoned City", {color: "#CEF3FF"})
+				for (let pId of api.getPlayerIds()) {
+					api.setClientOption(pId, "RightInfoText", ["Game starting in ", {str: `${waitSeconds}`, style: {color: "lime"}}])
+					api.removeEffect(pId, "Frozen")
+					api.setTargetedPlayerSettingForEveryone(pId, "nameTagInfo", {backgroundColor: ""})
+					api.setHealth(pId, 0)
+					api.setHealth(pId, 100)
+					api.removeEffect(pId, "Rested Speed")
+					api.removeEffect(pId, "Speed")
+					api.setTargetedPlayerSettingForEveryone(pId, "hasPriorityNametag", false, false)
+					api.setClientOption(pId, "useInventory", true)
+					api.setClientOption(pId, "useFullInventory", false)
+				}
+				let rem = api.getPlayerIds().filter(pId => pId !== player)
+				api.removeEffect(player, "Speed")
+				api.broadcastMessage(`The tagger (${api.getEntityName(player)}) won!`, {color: "goldenrod"})
+				for (let pId of api.getPlayerIds()) {
+					api.setClientOption(pId, "middleTextUpper", "The tagger won!")
+				}
+				api.giveItem(player, "Gold Coin", 10)
+				api.sendMessage(player, "You won!")
+				r1timer = 0
+			}
+		} else if (dmgId !== player && api.getEffects(dmgId).includes("Frozen") && atkId !== player && !api.getEffects(atkId).includes("Frozen") && !api.getEffects(atkId).includes("Invisible")) {
+			api.removeEffect(dmgId, "Frozen")
+			api.sendMessage(atkId, ["Unfroze ", {str: api.getEntityName(dmgId), style: {color: "lime"}}, "!"])
+			api.sendMessage(dmgId, "You have been unfrozen!", {color: "goldenrod"})
+			api.broadcastMessage([{str: api.getEntityName(dmgId), style: {color: "cyan"}}, " was unfrozen by ", {str: api.getEntityName(atkId), style: {color: "aqua"}}, "!"])
+		}
+	}
+	return "preventDamage"
+}
+
+onRespawnRequest = (pId) => {
+	if (!game) {
+		api.setClientOption(pId, "middleTextUpper", "")
+		api.setPosition(pId, [242, 88, 82])
+		api.setClientOption(pId, "middleTextLower", "")
+		api.setClientOption(pId, "creative", false)
+		api.setWalkThroughType(pId, "Glass", true)
+		api.setPosition(pId, [242, 88, 82])
+		api.setHealth(pId, 100)
+		api.removeEffect(pId, "Invisible")
+	} else {
+		api.setPosition(pId, [242, 88, 82])
+		api.setClientOption(pId, "middleTextLower", "You are spectating")
+		api.setClientOption(pId, "creative", true)
+		api.setWalkThroughType(pId, "Glass")
+		api.setPosition(pId, [242, 88, 82])
+		api.setHealth(pId, null)
+		api.applyEffect(pId, "Invisible", null, {})
+	}
+}
+
+onPlayerLeave = (pId, shutDown) => {
+	if (game && pId === player) {
+		api.broadcastMessage("The tagger has left the game", {color: "goldenrod"})
+		game = false
+		gameTimer = gameLength * 60 * 20 + 1
+		api.broadcastMessage("Map changed to Abandoned City", {color: "#CEF3FF"})
+		for (let pId of api.getPlayerIds()) {
+			api.setClientOption(pId, "RightInfoText", ["Game starting in ", {str: `${waitSeconds}`, style: {color: "lime"}}])
+			api.removeEffect(pId, "Frozen")
+			api.setTargetedPlayerSettingForEveryone(pId, "nameTagInfo", {backgroundColor: ""})
+			api.setHealth(pId, 0)
+			api.setHealth(pId, 100)
+			api.removeEffect(pId, "Rested Speed")
+			api.removeEffect(pId, "Speed")
+			api.setTargetedPlayerSettingForEveryone(pId, "hasPriorityNametag", false, false)
+			api.setClientOption(pId, "useInventory", true)
+			api.setClientOption(pId, "useFullInventory", false)
+		}
+		api.broadcastMessage("The runners won!", {color: "goldenrod"})
+		for (let pId of api.getPlayerIds()) {
+			api.setClientOption(pId, "middleTextUpper", "The runners won!")
+		}
+		for (let pId of api.getPlayerIds()) {
+			api.giveItem(pId, "Gold Coin", 10)
+			api.sendMessage(pId, "You won!")
+		}
+		r1timer = 0
+	}
+}
+
+onPlayerDropItem = (pId, x, y, z, name, amt, idx) => {
+	return "preventDrop"
+}
+
+onPlayerMoveInvenItem = (pId, idx, sIdx, eIdx, amt) => {
+	return "preventChange"
+}
+
+onPlayerAltAction = (pId, x, y, z, block, eId) => {
+	if (x === 204 && y === 75 && z === 78) {
+		let c = api.getInventoryItemAmount(pId, "Gold Coin")
+		if (c >= 300) {
+			api.removeItemName(pId, "Gold Coin", 300)
+			api.giveItem(pId, "Melon Slice")
+		} else {
+			api.sendMessage(pId, "You need 300 coins to buy Melon Slice", {color: "#CEF3FF"})
+		}
+	}
+	if (x === 205 && y === 105 && z === 60) {
+		let c = api.getInventoryItemAmount(pId, "Gold Coin")
+		if (c >= 100) {
+			api.removeItemName(pId, "Gold Coin", 100)
+			api.giveItem(pId, "Banana")
+		} else {
+			api.sendMessage(pId, "You need 100 coins to buy Banana", {color: "#CEF3FF"})
+		}
+	}
+	if (x === 218 && y === 75 && z === 113) {
+		let c = api.getInventoryItemAmount(pId, "Gold Coin")
+		if (c >= 200) {
+			api.removeItemName(pId, "Gold Coin", 200)
+			api.giveItem(pId, "Cracked Coconut")
+		} else {
+			api.sendMessage(pId, "You need 200 coins to buy Cracked Coconut", {color: "#CEF3FF"})
+		}
+	}
+	if (x === 280 && y === 75 && z === 101) {
+		let c = api.getInventoryItemAmount(pId, "Gold Coin")
+		if (c >= 50) {
+			api.removeItemName(pId, "Gold Coin", 50)
+			api.giveItem(pId, "Watermelon Slice")
+		} else {
+			api.sendMessage(pId, "You need 50 coins to buy Watermelon Slice", {color: "#CEF3FF"})
+		}
+	}
+}
+
+onBlockStand = (pId, x, y, z, block) => {
+	if (block === "Block of Moonstone") {
+		api.setVelocity(pId, 0, 12, 0)
+	}
+}
+```
