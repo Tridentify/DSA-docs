@@ -9,7 +9,7 @@ I have created multiple Bloxd games. Some of my favourite games are listed below
 **Dodgeball** is a game that I created in Bloxd.
 In Dodgeball, players first choose a side. Then, each player receives a few dodgeballs. The players then use those dodgeballs to attack other opponents. If the player succeeds in hitting an opponent, the opponent will be eliminated. However, another player in the opponent's team can bring the opponent back into the game. If all the players in a team are eliminated, the game ends, and the opposing team wins!
 
-### 2. Freeza Tag
+### 2. Freeze Tag
 In **Freeze Tag**, there will be one tagger, and the rest will be the runners. The goal of the game for the runners is to not get tagged by the tagger, and the goal for the tagger is to tag everyone before the game ends. If a runner gets tagged, other runners who are not tagged can unfreeze the player.
 
 ### 3. Lucky Roll
