@@ -6,4 +6,5 @@ Bloxd's coding system is JavaScript. So, using JavaScript and Bloxd's in-built A
 I have created multiple Bloxd games. Some of my favourite games are listed below.
 
 ### 1. Dodgeball
-**Dodgeball** is a game that I created.
+**Dodgeball** is a game that I created in Bloxd.
+In Dodgeball, players first choose a side. Then, each player receives a few dodgeballs. The players then use those dodgeballs to attack other opponents. If the player succeeds in hitting an opponent, the opponent will be eliminated. However, another player in the opponent's team can bring the opponent back into the game. If all the players in a team are eliminated, the game ends, and the opposing team wins!
